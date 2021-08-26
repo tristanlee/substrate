@@ -33,7 +33,7 @@ use sp_consensus::{
 use sp_blockchain::HeaderBackend;
 use std::collections::HashMap;
 use std::time::Duration;
-use sp_inherents::InherentDataProviders;
+use sp_inherents::{InherentDataProviders, InherentIdentifier};
 use sp_api::{ProvideRuntimeApi, TransactionFor};
 
 /// max duration for creating a proposal in secs
@@ -46,6 +46,7 @@ pub struct SealBlockParams<'a, B: BlockT, BI, SC, C: ProvideRuntimeApi<B>, E, P:
 	pub create_empty: bool,
 	/// instantly finalize this block?
 	pub finalize: bool,
+	pub timestamp: u64,
 	/// specify the parent hash of the about-to-created block
 	pub parent_hash: Option<<B as BlockT>::Hash>,
 	/// sender to report errors/success to the rpc.
@@ -71,6 +72,7 @@ pub async fn seal_block<B, BI, SC, C, E, P>(
 	SealBlockParams {
 		create_empty,
 		finalize,
+		timestamp,
 		pool,
 		parent_hash,
 		client,
@@ -114,7 +116,9 @@ pub async fn seal_block<B, BI, SC, C, E, P>(
 
 		let proposer = env.init(&parent)
 			.map_err(|err| Error::StringError(format!("{:?}", err))).await?;
-		let id = inherent_data_provider.create_inherent_data()?;
+		let mut id = inherent_data_provider.create_inherent_data()?;
+		const INHERENT_IDENTIFIER: InherentIdentifier = *b"timstap0";
+		id.replace_data(INHERENT_IDENTIFIER, &timestamp);
 		let inherents_len = id.len();
 
 		let digest = if let Some(digest_provider) = digest_provider {

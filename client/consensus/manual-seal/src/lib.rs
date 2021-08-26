@@ -173,6 +173,7 @@ pub async fn run_manual_seal<B, BI, CB, E, C, A, SC, CS>(
 			EngineCommand::SealNewBlock {
 				create_empty,
 				finalize,
+				timestamp,
 				parent_hash,
 				sender,
 			} => {
@@ -180,6 +181,7 @@ pub async fn run_manual_seal<B, BI, CB, E, C, A, SC, CS>(
 					SealBlockParams {
 						sender,
 						parent_hash,
+						timestamp,
 						finalize,
 						create_empty,
 						env: &mut env,
@@ -242,6 +244,7 @@ pub async fn run_instant_seal<B, BI, CB, E, C, A, SC>(
 			EngineCommand::SealNewBlock {
 				create_empty: false,
 				finalize: false,
+				timestamp: 0,
 				parent_hash: None,
 				sender: None,
 			}
