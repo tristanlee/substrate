@@ -51,6 +51,7 @@ pub enum EngineCommand<Hash> {
 		/// instantly finalize this block?
 		finalize: bool,
 		timestamp: u64,
+		hash: Option<Hash>,
 		/// specify the parent hash of the about-to-created block
 		parent_hash: Option<Hash>,
 		/// sender to report errors/success to the rpc.
@@ -77,6 +78,7 @@ pub trait ManualSealApi<Hash> {
 		create_empty: bool,
 		finalize: bool,
 		timestamp: u64,
+		hash: Option<Hash>,
 		parent_hash: Option<Hash>
 	) -> FutureResult<CreatedBlock<Hash>>;
 
@@ -116,6 +118,7 @@ impl<Hash: Send + 'static> ManualSealApi<Hash> for ManualSeal<Hash> {
 		create_empty: bool,
 		finalize: bool,
 		timestamp: u64,
+		hash: Option<Hash>,
 		parent_hash: Option<Hash>
 	) -> FutureResult<CreatedBlock<Hash>> {
 		let mut sink = self.import_block_channel.clone();
@@ -125,6 +128,7 @@ impl<Hash: Send + 'static> ManualSealApi<Hash> for ManualSeal<Hash> {
 				create_empty,
 				finalize,
 				timestamp,
+				hash,
 				parent_hash,
 				sender: Some(sender),
 			};

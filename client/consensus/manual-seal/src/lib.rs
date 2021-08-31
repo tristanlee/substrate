@@ -174,6 +174,7 @@ pub async fn run_manual_seal<B, BI, CB, E, C, A, SC, CS>(
 				create_empty,
 				finalize,
 				timestamp,
+				hash,
 				parent_hash,
 				sender,
 			} => {
@@ -181,6 +182,7 @@ pub async fn run_manual_seal<B, BI, CB, E, C, A, SC, CS>(
 					SealBlockParams {
 						sender,
 						parent_hash,
+						hash,
 						timestamp,
 						finalize,
 						create_empty,
@@ -245,6 +247,7 @@ pub async fn run_instant_seal<B, BI, CB, E, C, A, SC>(
 				create_empty: false,
 				finalize: false,
 				timestamp: 0,
+				hash: None,
 				parent_hash: None,
 				sender: None,
 			}

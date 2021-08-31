@@ -47,6 +47,7 @@ pub struct SealBlockParams<'a, B: BlockT, BI, SC, C: ProvideRuntimeApi<B>, E, P:
 	/// instantly finalize this block?
 	pub finalize: bool,
 	pub timestamp: u64,
+	pub hash: Option<<B as BlockT>::Hash>,
 	/// specify the parent hash of the about-to-created block
 	pub parent_hash: Option<<B as BlockT>::Hash>,
 	/// sender to report errors/success to the rpc.
@@ -73,6 +74,7 @@ pub async fn seal_block<B, BI, SC, C, E, P>(
 		create_empty,
 		finalize,
 		timestamp,
+		hash,
 		pool,
 		parent_hash,
 		client,
@@ -143,6 +145,7 @@ pub async fn seal_block<B, BI, SC, C, E, P>(
 		params.finalized = finalize;
 		params.fork_choice = Some(ForkChoiceStrategy::LongestChain);
 		params.storage_changes = Some(proposal.storage_changes);
+		params.post_hash = hash;
 
 		if let Some(digest_provider) = digest_provider {
 			digest_provider.append_block_import(&parent, &mut params, &id)?;
@@ -150,7 +153,8 @@ pub async fn seal_block<B, BI, SC, C, E, P>(
 
 		match block_import.import_block(params, HashMap::new())? {
 			ImportResult::Imported(aux) => {
-				Ok(CreatedBlock { hash: <B as BlockT>::Header::hash(&header), aux })
+				//Ok(CreatedBlock { hash: <B as BlockT>::Header::hash(&header), aux })
+				Ok(CreatedBlock { hash: hash.unwrap(), aux })
 			},
 			other => Err(other.into()),
 		}
