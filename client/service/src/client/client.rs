@@ -634,6 +634,7 @@ impl<B, E, Block, RA> Client<B, E, Block, RA> where
 			fork_choice,
 			intermediates,
 			import_existing,
+			post_hash,
 			..
 		} = import_block;
 
@@ -655,7 +656,12 @@ impl<B, E, Block, RA> Client<B, E, Block, RA> where
 			PrePostHeader::Different(header, post_header)
 		};
 
-		let hash = import_headers.post().hash();
+		//:NOTICE: use block-hash from manual-seal if not None
+		let hash = if let Some(post_hash) = post_hash {
+			post_hash
+		} else {
+			import_headers.post().hash()
+		};
 		let height = (*import_headers.post().number()).saturated_into::<u64>();
 
 		*self.importing_block.write() = Some(hash);

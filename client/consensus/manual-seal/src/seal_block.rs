@@ -153,8 +153,7 @@ pub async fn seal_block<B, BI, SC, C, E, P>(
 
 		match block_import.import_block(params, HashMap::new())? {
 			ImportResult::Imported(aux) => {
-				//Ok(CreatedBlock { hash: <B as BlockT>::Header::hash(&header), aux })
-				Ok(CreatedBlock { hash: hash.unwrap(), aux })
+				Ok(CreatedBlock { hash: <B as BlockT>::Header::hash(&header), aux })
 			},
 			other => Err(other.into()),
 		}
