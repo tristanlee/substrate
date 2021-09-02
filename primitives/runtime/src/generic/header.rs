@@ -31,6 +31,8 @@ use sp_std::{
 	convert::TryFrom,
 	fmt::Debug,
 };
+use crate::ConsensusEngineId;
+
 
 /// Abstraction over a block header for a substrate chain.
 #[derive(PartialEq, Eq, Clone, sp_core::RuntimeDebug)]
@@ -179,6 +181,18 @@ impl<Number, Hash> Header<Number, Hash> where
 	/// Convenience helper for computing the hash of the header without having
 	/// to import the trait.
 	pub fn hash(&self) -> Hash::Output {
+		const id: ConsensusEngineId = *b"cust";
+		let filter_log = |log: Hash::Output | match log {
+			hash => Some(hash),
+			_ => None,
+		};
+
+		// use custom hash from manual-seal if any
+		let hash = self.digest.convert_first(|l| l.seal_try_to(&id).and_then(filter_log));
+		if let Some(hash) = hash {
+			return hash;
+		}
+		
 		Hash::hash_of(self)
 	}
 }

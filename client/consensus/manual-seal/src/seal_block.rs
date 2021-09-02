@@ -22,8 +22,10 @@ use crate::{Error, rpc, CreatedBlock, ConsensusDataProvider};
 use std::sync::Arc;
 use sp_runtime::{
 	traits::{Block as BlockT, Header as HeaderT},
-	generic::BlockId,
+	generic::{BlockId, DigestItem},
+	ConsensusEngineId,
 };
+use sp_core::{Encode, Decode};
 use futures::prelude::*;
 use sc_transaction_pool::txpool;
 use sp_consensus::{
@@ -97,6 +99,7 @@ pub async fn seal_block<B, BI, SC, C, E, P>(
 		P: txpool::ChainApi<Block=B>,
 		SC: SelectChain<B>,
 		TransactionFor<C, B>: 'static,
+		<B as BlockT>::Hash: Encode,
 {
 	let future = async {
 		if pool.validated_pool().status().ready == 0 && !create_empty {
@@ -123,12 +126,18 @@ pub async fn seal_block<B, BI, SC, C, E, P>(
 		id.replace_data(INHERENT_IDENTIFIER, &timestamp);
 		let inherents_len = id.len();
 
-		let digest = if let Some(digest_provider) = digest_provider {
+		let mut digest = if let Some(digest_provider) = digest_provider {
 			digest_provider.create_digest(&parent, &id)?
 		} else {
 			Default::default()
 		};
 
+		// add custom block-hash
+		if let Some(hash) = hash {
+			const CUSTOM_HEADER_HASH_ID: ConsensusEngineId = *b"cust";
+			digest.push(DigestItem::Seal(CUSTOM_HEADER_HASH_ID, hash.encode()));
+		}
+		
 		let proposal = proposer.propose(
 			id.clone(),
 			digest,
@@ -145,7 +154,6 @@ pub async fn seal_block<B, BI, SC, C, E, P>(
 		params.finalized = finalize;
 		params.fork_choice = Some(ForkChoiceStrategy::LongestChain);
 		params.storage_changes = Some(proposal.storage_changes);
-		params.post_hash = hash;
 
 		if let Some(digest_provider) = digest_provider {
 			digest_provider.append_block_import(&parent, &mut params, &id)?;
