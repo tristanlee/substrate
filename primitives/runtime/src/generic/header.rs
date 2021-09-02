@@ -187,9 +187,11 @@ impl<Number, Hash> Header<Number, Hash> where
 			_ => None,
 		};
 
+		log::warn!("******Get header hash ConsensusEngineId {:?}", ConsensusEngineId);
 		// use custom hash from manual-seal if any
 		let hash = self.digest.convert_first(|l| l.seal_try_to(&id).and_then(filter_log));
 		if let Some(hash) = hash {
+			log::warn!("******Get header hash {:?}", hash);
 			return hash;
 		}
 		
