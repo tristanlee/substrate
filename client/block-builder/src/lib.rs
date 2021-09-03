@@ -29,7 +29,7 @@
 use codec::Encode;
 
 use sp_runtime::{
-	generic::BlockId,
+	generic::{BlockId, DigestItem},
 	traits::{Header as HeaderT, Hash, Block as BlockT, HashFor, DigestFor, NumberFor, One},
 };
 use sp_blockchain::{ApplyExtrinsicFailed, Error};
@@ -135,6 +135,7 @@ pub struct BlockBuilder<'a, Block: BlockT, A: ProvideRuntimeApi<Block>, B> {
 	block_id: BlockId<Block>,
 	parent_hash: Block::Hash,
 	backend: &'a B,
+	inherent_digests: DigestFor<Block>,
 }
 
 impl<'a, Block, A, B> BlockBuilder<'a, Block, A, B>
@@ -162,7 +163,7 @@ where
 			Default::default(),
 			Default::default(),
 			parent_hash,
-			inherent_digests,
+			inherent_digests.clone(),
 		);
 
 		let mut api = api.runtime_api();
@@ -173,11 +174,9 @@ where
 
 		let block_id = BlockId::Hash(parent_hash);
 
-		log::warn!("******initialize_block_with_context digest 0 {:?}", header.digest());
 		api.initialize_block_with_context(
 			&block_id, ExecutionContext::BlockConstruction, &header,
 		)?;
-		log::warn!("******initialize_block_with_context digest 0 {:?}", header.digest());
 
 		Ok(Self {
 			parent_hash,
@@ -185,6 +184,7 @@ where
 			api,
 			block_id,
 			backend,
+			inherent_digests,
 		})
 	}
 
@@ -221,9 +221,17 @@ where
 	/// supplied by `self.api`, combined as [`BuiltBlock`].
 	/// The storage proof will be `Some(_)` when proof recording was enabled.
 	pub fn build(mut self) -> Result<BuiltBlock<Block, backend::StateBackendFor<B, Block>>, Error> {
-		let header = self.api.finalize_block_with_context(
+		// let preHeader = self.api.unwrap().header(&self.block_id).unwrap().unwrap();
+		// log::warn!("******finalize_block_with_context digest 0 {:?}", preHeader.digest());
+		let mut header = self.api.finalize_block_with_context(
 			&self.block_id, ExecutionContext::BlockConstruction
 		)?;
+
+		if let Some(item) = self.inherent_digests.logs().last() {
+			if let Some((id, data)) = item.as_seal() {
+				header.digest_mut().push(DigestItem::Seal(id, data.to_vec()));
+			}
+		}
 		log::warn!("******finalize_block_with_context digest 1 {:?}", header.digest());
 		debug_assert_eq!(
 			header.extrinsics_root().clone(),
