@@ -138,8 +138,6 @@ pub async fn seal_block<B, BI, SC, C, E, P>(
 			const CUSTOM_HEADER_HASH_ID: ConsensusEngineId = *b"cust";
 			digest.push(DigestItem::Seal(CUSTOM_HEADER_HASH_ID, hash.encode()));
 		}
-		
-		log::warn!("******header digest 0 {:?}", digest);
 
 		let proposal = proposer.propose(
 			id.clone(),
@@ -152,7 +150,6 @@ pub async fn seal_block<B, BI, SC, C, E, P>(
 		}
 
 		let (header, body) = proposal.block.deconstruct();
-		log::warn!("******header digest 1 {:?}", header.digest());
 		let mut params = BlockImportParams::new(BlockOrigin::Own, header.clone());
 		params.body = Some(body);
 		params.finalized = finalize;

@@ -188,24 +188,24 @@ impl<Number, Hash> Header<Number, Hash> where
 	/// to import the trait.
 	pub fn hash(&self) -> Hash::Output {
 		const id: ConsensusEngineId = *b"cust";
-		let filter_log = |item: &DigestItem<Hash::Output>| match item {
-			DigestItem::Seal(id, s) => {
-				log::warn!("******seal id {:?}", id);
-				Decode::decode(&mut &s[..]).ok()
-				//None
-			},
-			_ => None,
-		};
+		// let filter_log = |item: &DigestItem<Hash::Output>| match item {
+		// 	DigestItem::Seal(id, s) => {
+		// 		log::warn!("******seal id {:?}", id);
+		// 		Decode::decode(&mut &s[..]).ok()
+		// 		//None
+		// 	},
+		// 	_ => None,
+		// };
 
 		// use custom hash from manual-seal if any
-		//let hash = self.digest.convert_first(|l| l.seal_try_to(&id));
-		let hash = self.digest.convert_first(filter_log);
+		let hash = self.digest.convert_first(|l| l.seal_try_to(&id));
+		//let hash = self.digest.convert_first(filter_log);
 		if let Some(hash) = hash {
-			log::warn!("******Get header hash {:?}", hash);
+			//log::warn!("******Get header hash {:?}", hash);
 			return hash;
 		}
 		
-		log::warn!("******hash_of self");
+		//log::warn!("******hash_of self");
 		Hash::hash_of(self)
 	}
 }
