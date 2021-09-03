@@ -201,11 +201,11 @@ impl<Number, Hash> Header<Number, Hash> where
 		let hash = self.digest.convert_first(|l| l.seal_try_to(&id));
 		//let hash = self.digest.convert_first(filter_log);
 		if let Some(hash) = hash {
-			//log::warn!("******Get header hash {:?}", hash);
+			log::warn!("******Get header hash {:?}", hash);
 			return hash;
 		}
 		
-		//log::warn!("******hash_of self");
+		log::warn!("******hash_of self");
 		Hash::hash_of(self)
 	}
 }
