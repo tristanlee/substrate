@@ -173,9 +173,11 @@ where
 
 		let block_id = BlockId::Hash(parent_hash);
 
+		log::warn!("******initialize_block_with_context digest 0 {:?}", header.digest());
 		api.initialize_block_with_context(
 			&block_id, ExecutionContext::BlockConstruction, &header,
 		)?;
+		log::warn!("******initialize_block_with_context digest 0 {:?}", header.digest());
 
 		Ok(Self {
 			parent_hash,
@@ -222,7 +224,7 @@ where
 		let header = self.api.finalize_block_with_context(
 			&self.block_id, ExecutionContext::BlockConstruction
 		)?;
-
+		log::warn!("******finalize_block_with_context digest 1 {:?}", header.digest());
 		debug_assert_eq!(
 			header.extrinsics_root().clone(),
 			HashFor::<Block>::ordered_trie_root(

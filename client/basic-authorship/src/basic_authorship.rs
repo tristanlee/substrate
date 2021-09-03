@@ -358,9 +358,9 @@ impl<A, B, Block, C, PR> Proposer<B, Block, C, A, PR>
 
 		self.transaction_pool.remove_invalid(&unqueue_invalid);
 
-		log::warn!("******propose digest 0 {:?}", inherent_digests);
+
 		let (block, storage_changes, proof) = block_builder.build()?.into_inner();
-		log::warn!("******propose digest 1 {:?}", block.header().digest());
+
 		self.metrics.report(
 			|metrics| {
 				metrics.number_of_transactions.set(block.extrinsics().len() as u64);

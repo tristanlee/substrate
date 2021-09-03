@@ -191,8 +191,8 @@ impl<Number, Hash> Header<Number, Hash> where
 		let filter_log = |item: &DigestItem<Hash::Output>| match item {
 			DigestItem::Seal(id, s) => {
 				log::warn!("******seal id {:?}", id);
-				//Decode::decode(&mut &s[..]).ok()
-				None
+				Decode::decode(&mut &s[..]).ok()
+				//None
 			},
 			_ => None,
 		};
