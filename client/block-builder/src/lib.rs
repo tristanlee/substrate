@@ -225,13 +225,10 @@ where
 			&self.block_id, ExecutionContext::BlockConstruction
 		)?;
 
-		// if let Some(item) = self.inherent_digests.logs().last() {
-		// 	if let Some((id, data)) = item.as_seal() {
-		// 		header.digest_mut().push(DigestItem::Seal(id, data.to_vec()));
-		// 	}
-		// }
-		if let Some((id, data)) = self.inherent_digests.convert_first(|l| l.as_seal()) {
-			header.digest_mut().push(DigestItem::Seal(id, data.to_vec()));
+		if let Some(item) = self.inherent_digests.logs().last() {
+			if let Some((id, data)) = item.as_seal() {
+				header.digest_mut().push(DigestItem::Seal(id, data.to_vec()));
+			}
 		}
 		log::warn!("******finalize_block_with_context digest 1 {:?}", header.digest());
 		debug_assert_eq!(
