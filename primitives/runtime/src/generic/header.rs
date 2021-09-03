@@ -191,9 +191,8 @@ impl<Number, Hash> Header<Number, Hash> where
 			_ => None,
 		};
 
-		
 		// use custom hash from manual-seal if any
-		let hash = self.digest.convert_first(|l| l.seal_try_to(&id).and_then(filter_log));
+		let hash = self.digest.convert_first(|l| l.seal_try_to(&id));
 		if let Some(hash) = hash {
 			log::warn!("******Get header hash {:?}", hash);
 			return hash;
