@@ -146,13 +146,13 @@ pub async fn seal_block<B, BI, SC, C, E, P>(
 			digest,
 			Duration::from_secs(MAX_PROPOSAL_DURATION),
 		).map_err(|err| Error::StringError(format!("{:?}", err))).await?;
-		log::warn!("******header digest 1 {:?}", header.digest());
-
+		
 		if proposal.block.extrinsics().len() == inherents_len && !create_empty {
 			return Err(Error::EmptyTransactionPool)
 		}
 
 		let (header, body) = proposal.block.deconstruct();
+		log::warn!("******header digest 1 {:?}", header.digest());
 		let mut params = BlockImportParams::new(BlockOrigin::Own, header.clone());
 		params.body = Some(body);
 		params.finalized = finalize;
