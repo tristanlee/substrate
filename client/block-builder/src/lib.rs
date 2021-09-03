@@ -233,8 +233,6 @@ where
 		if let Some((id, data)) = self.inherent_digests.convert_first(|l| l.as_seal()) {
 			header.digest_mut().push(DigestItem::Seal(id, data.to_vec()));
 		}
-
-		let hash = self.digest.convert_first(|l| l.seal_try_to(&id));
 		log::warn!("******finalize_block_with_context digest 1 {:?}", header.digest());
 		debug_assert_eq!(
 			header.extrinsics_root().clone(),
