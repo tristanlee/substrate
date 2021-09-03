@@ -591,9 +591,10 @@ pub trait Header:
 	fn digest_mut(&mut self) -> &mut Digest<Self::Hash>;
 
 	/// Returns the hash of the header.
-	fn hash(&self) -> Self::Hash {
-		<Self::Hashing as Hash>::hash_of(self)
-	}
+	fn hash(&self) -> Self::Hash;
+	// fn hash(&self) -> Self::Hash {
+	// 	<Self::Hashing as Hash>::hash_of(self)
+	// }
 }
 
 /// Something which fulfills the abstract idea of a Substrate block. It has types for

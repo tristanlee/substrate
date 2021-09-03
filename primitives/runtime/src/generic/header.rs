@@ -170,6 +170,10 @@ impl<Number, Hash> traits::Header for Header<Number, Hash> where
 			digest,
 		}
 	}
+
+	fn hash(&self) -> Self::Hash {
+		self.hash()
+	}
 }
 
 impl<Number, Hash> Header<Number, Hash> where
