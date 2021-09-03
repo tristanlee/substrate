@@ -146,6 +146,7 @@ pub async fn seal_block<B, BI, SC, C, E, P>(
 			digest,
 			Duration::from_secs(MAX_PROPOSAL_DURATION),
 		).map_err(|err| Error::StringError(format!("{:?}", err))).await?;
+		log::warn!("******header digest 1 {:?}", header.digest());
 
 		if proposal.block.extrinsics().len() == inherents_len && !create_empty {
 			return Err(Error::EmptyTransactionPool)
@@ -158,8 +159,6 @@ pub async fn seal_block<B, BI, SC, C, E, P>(
 		params.fork_choice = Some(ForkChoiceStrategy::LongestChain);
 		params.storage_changes = Some(proposal.storage_changes);
 
-		log::warn!("******header digest 1 {:?}", header.digest());
-		
 		if let Some(digest_provider) = digest_provider {
 			digest_provider.append_block_import(&parent, &mut params, &id)?;
 		}
