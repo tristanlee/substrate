@@ -139,6 +139,8 @@ pub async fn seal_block<B, BI, SC, C, E, P>(
 			digest.push(DigestItem::Seal(CUSTOM_HEADER_HASH_ID, hash.encode()));
 		}
 		
+		log::warn!("******header digest 0 {:?}", digest);
+
 		let proposal = proposer.propose(
 			id.clone(),
 			digest,
@@ -156,6 +158,8 @@ pub async fn seal_block<B, BI, SC, C, E, P>(
 		params.fork_choice = Some(ForkChoiceStrategy::LongestChain);
 		params.storage_changes = Some(proposal.storage_changes);
 
+		log::warn!("******header digest 1 {:?}", header.digest());
+		
 		if let Some(digest_provider) = digest_provider {
 			digest_provider.append_block_import(&parent, &mut params, &id)?;
 		}
