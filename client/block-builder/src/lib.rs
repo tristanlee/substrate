@@ -230,7 +230,7 @@ where
 				header.digest_mut().push(DigestItem::Seal(id, data.to_vec()));
 			}
 		}
-		log::warn!("******finalize_block_with_context digest 1 {:?}", header.digest());
+		//log::warn!("******finalize_block_with_context digest 1 {:?}", header.digest());
 		debug_assert_eq!(
 			header.extrinsics_root().clone(),
 			HashFor::<Block>::ordered_trie_root(
