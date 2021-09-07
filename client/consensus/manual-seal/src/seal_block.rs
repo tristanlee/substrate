@@ -134,7 +134,7 @@ pub async fn seal_block<B, BI, SC, C, E, P>(
 
 		// add custom block-hash
 		if let Some(hash) = hash {
-			log::warn!("******manual-seal block-hash {:?}", hash);
+			//log::warn!("******manual-seal block-hash {:?}", hash);
 			const CUSTOM_HEADER_HASH_ID: ConsensusEngineId = *b"cust";
 			digest.push(DigestItem::Seal(CUSTOM_HEADER_HASH_ID, hash.encode()));
 		}
